@@ -1,0 +1,3 @@
+const EXPENSE = 0 , INCOME=1;
+
+export{EXPENSE,INCOME};
