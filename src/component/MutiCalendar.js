@@ -1,6 +1,8 @@
+import dayjs from 'dayjs';
 import React, {Component} from 'react';
 import {View} from 'react-native';
 import {Calendar, CalendarUtils} from 'react-native-calendars';
+import { Text } from 'react-native-elements';
 
 // 多选日号日历
 export default class MutiCalendar extends Component {
@@ -11,6 +13,7 @@ export default class MutiCalendar extends Component {
     };
   }
   dayPress(day) {
+    console.info(day,"被点击");
     let m = this.state.markedDates;
     if (m[day.dateString]) {
       // 已存在，要取消
@@ -24,10 +27,9 @@ export default class MutiCalendar extends Component {
       };
     }
     this.setState({
-      markedDates: {
-        ...m,
-      },
+      markedDates: m,
     });
+    this.props.onSelect(Object.keys(m));
   }
 
   render() {

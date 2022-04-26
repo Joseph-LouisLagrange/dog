@@ -2,17 +2,20 @@ import dayjs from 'dayjs';
 import React, {Component} from 'react';
 import {View} from 'react-native';
 import {Calendar} from 'react-native-calendars';
+import {Text} from 'react-native-elements';
 
 export default class WeekCalendar extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedDays: {},
+      selectedDays: {
+        
+      },
     };
   }
 
   dayOnPress(day) {
-    console.info('mm');
+    console.debug(day,"被点击");
     // 计算day所属的周的开始时间与结束时间（一共7天）
     let d = dayjs(day.timestamp).day();
     let start = dayjs(day.timestamp).subtract(d, 'day');
@@ -31,15 +34,16 @@ export default class WeekCalendar extends Component {
     this.setState({
       selectedDays: selectedDays,
     });
+    this.props.onSelect(Object.keys(selectedDays));
   }
+
 
   render() {
     return (
       <View>
         <Calendar
-        markingType='period'
-        enableSwipeMonths={true}
-    
+          markingType="period"
+          enableSwipeMonths={true}
           onDayPress={day => this.dayOnPress(day)}
           markedDates={this.state.selectedDays}
         />

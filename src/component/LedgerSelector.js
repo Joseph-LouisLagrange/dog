@@ -1,15 +1,10 @@
 import React, {Component} from 'react';
 import RNPickerSelect from 'react-native-picker-select';
-import {getAllLedgers, getUsingLedger} from '../api/LedgerApi';
+import {getAllLedgers, queryUsingLedger} from '../api/LedgerApi';
 
 export default class LedgerSelector extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      ledgers: [],
-      usingLedger: {},
-    };
-    this.loadLedgers();
   }
 
   loadLedgers() {
@@ -35,16 +30,16 @@ export default class LedgerSelector extends Component {
   }
 
   mapItem(ledger) {
-    return {label: ledger.name, key: ledger.ID, value: ledger.ID};
+    return {label: ledger.name, key: ledger.ID, value: ledger};
   }
 
   render() {
     return (
       <RNPickerSelect
         placeholder={{}}
-        value={this.state.usingLedger.ID}
-        items={this.state.ledgers.map(ledger => this.mapItem(ledger))}
-        onValueChange={ID => this.props.onSelect(ID)}
+        value={this.props.selectedLedger}
+        items={this.props.ledgers.map(ledger => this.mapItem(ledger))}
+        onValueChange={ledger => this.props.onSelect(ledger)}
       />
     );
   }

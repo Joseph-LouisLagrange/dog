@@ -1,28 +1,35 @@
-import {http} from '../config/ApiConfig';
+import {get, http, postJSON, postKV} from '../config/ApiConfig';
 
 export function createLedger(ledger) {
-  console.info(ledger);
+  return postJSON({url: '/ledger/create', data: ledger});
 }
 
-export function getAllLedgers() {
-  return new Promise((resolve, reject) => {
-    let ledgers = [{name: '默认账本', ID: 0, using: true}];
-    for (let i = 1; i <= 20; i++) {
-      ledgers.push({name: '账本' + i, ID: i});
-    }
-    resolve(ledgers);
+export function deleteLedger(ID) {
+  return get({
+    url: '/ledger/delete',
+    params: {
+      ID: ID,
+    },
   });
 }
 
-export function getUsingLedger() {
-  return new Promise((resolve, reject) => {
-    resolve({
-      name: '默认账本',
-      ID: 0,
-      using: true,
-      coin: {
-        url: 'http://www.baidu.com',
-      },
-    });
+export function queryAllLedgers() {
+  return get({url: '/ledger/readAll'});
+}
+
+export function queryUsingLedger() {
+  return get({url: '/ledger/readUsingLedger'});
+}
+
+export function queryLedgerByID(ID) {
+  return get({
+    url: '/ledger/readByID',
+    params: {
+      ID: ID,
+    },
   });
+}
+
+export function updateLedger(ledger) {
+  return postJSON({url: '/ledger/update', data: ledger});
 }

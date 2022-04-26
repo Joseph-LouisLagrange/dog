@@ -1,9 +1,17 @@
-export function getAllAccounts(){
-    return new Promise((resolve,reject)=>{
-        let data = [];
-        for(let ID=1;ID<10;ID++){
-            data.push({ID:ID,name:"fff"+ID});
-        }
-        resolve(data);
-    })
+import { get, postJSON } from "../config/ApiConfig";
+
+export function queryAllAccountType(){
+    return get({url:"/public/getAccountTypes"});
+}
+
+export function createAccount(account){
+    return postJSON({url:"/account/create",data:account})
+}
+
+export function getAccountStatisticsInfo(){
+    return get({url:"/account/getAccountStatistics"});
+}
+
+export function queryAllAccount(){
+    return get({url:"/account/readAll"});
 }

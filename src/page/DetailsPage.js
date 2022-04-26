@@ -1,28 +1,87 @@
 import React, {Component} from 'react';
 import {ScrollView, View} from 'react-native';
-import {Icon, Text} from 'react-native-elements';
-import {getUsingLedger} from '../api/LedgerApi';
+import {
+  BottomSheet,
+  Button,
+  ButtonGroup,
+  Icon,
+  Text,
+} from 'react-native-elements';
+import {queryAllLedgers} from '../api/LedgerApi';
 import {Calendar, LocaleConfig} from 'react-native-calendars';
+import CalendarBottomSheet from '../component/CalendarBottomSheet';
+import {queryBillsForPeriods} from '../api/BillApi';
+import BillItemBlock from '../component/BillItemBlock';
+import BillSearchPage from './BillSearchPage';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {showSibling} from '../util/ViewUtil';
+import Loading from '../component/Loading';
+import dayjs from 'dayjs';
+import {MoneyView} from '../component/MoneyView';
+
+const Stack = createNativeStackNavigator();
 
 export default class DetailsPage extends Component {
+  render() {
+    return (
+      <Stack.Navigator
+        initialRouteName="Details-Page-View"
+        screenOptions={{headerShown: false}}>
+        <Stack.Screen name="Details-Page-View" component={DetailsPageView} />
+        <Stack.Screen name="Bill-Search-Page" component={BillSearchPage} />
+      </Stack.Navigator>
+    );
+  }
+}
+
+export class DetailsPageView extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      accountDateText: '2022年3月',
-      usingLedger: {coin: {}},
-      timeUnitText: '',
-      cashSurplus: 0,
-      selectedDates: {},
+      ranges: [
+        {startDate: dayjs().startOf('month'), endDate: dayjs().endOf('month')},
+      ],
+      allLedgers: [],
+      ledger: null,
+      surplus: 0.0,
+      expense: 0.0,
+      income: 0.0,
+      coin: {},
+      blocks: [],
     };
-    this.loadLedgers();
+    this.load();
+    this.calendarSelectorRef = React.createRef();
   }
 
-  loadLedgers() {
-    getUsingLedger().then(usingLedger => {
-      this.setState({
-        usingLedger: usingLedger,
-      });
+  async load() {
+    const love = showSibling(<Loading />);
+    const a = await queryAllLedgers();
+    let usingLedger;
+    for (let ledger of a.ledgers) {
+      if (ledger.using) {
+        usingLedger = ledger;
+      }
+    }
+    // 加载明细数据
+    const dto = await queryBillsForPeriods({
+      ledgerID: usingLedger.ID,
+      ranges: this.state.ranges,
     });
+    this.setState({
+      allLedgers: a.ledgers,
+      ledger: usingLedger,
+      surplus: dto.surplus,
+      expense: dto.expense,
+      income: dto.income,
+      coin: dto.coin,
+      blocks: dto.blocks,
+      // period: '',
+    });
+    love.destroy();
+  }
+
+  gotoSearchPage() {
+    this.props.navigation.navigate({name: 'Bill-Search-Page'});
   }
   selectDate() {}
   render() {
@@ -36,31 +95,23 @@ export default class DetailsPage extends Component {
         <View
           style={{
             marginVertical: 20,
-            width: '100%',
             display: 'flex',
             flexDirection: 'row',
-            justifyContent: 'flex-end',
-            alignItems: 'flex-end',
+            alignSelf: 'flex-end',
           }}>
-          <Text
-            h4
-            h4Style={{
-              textAlign: 'right',
-              textAlignVertical: 'bottom',
-            }}>
-            {this.state.accountDateText}的账目明细
+          <Text style={{fontSize: 18, alignSelf: 'center'}}>
+            {this.state.period}账目明细
           </Text>
-          <View style={{alignSelf: 'baseline'}}>
-            <Icon
-              color={'orange'}
-              type="material-icons"
-              name="date-range"
-              size={30}
-              onPress={() => {
-                this.selectDate();
-              }}
-            />
-          </View>
+          <Icon
+            containerStyle={{paddingHorizontal: 8}}
+            color={'orange'}
+            type="material-icons"
+            name="date-range"
+            size={30}
+            onPress={() => {
+              this.calendarSelectorRef.current.open();
+            }}
+          />
         </View>
         <View
           style={{
@@ -71,18 +122,25 @@ export default class DetailsPage extends Component {
             justifyContent: 'space-between',
           }}>
           <Text h4>
-            {this.state.usingLedger.name}
+            {this.state.ledger && this.state.ledger.name}
             <Icon type="ant-design" name="down" size={20} />
           </Text>
-          <Icon type="font-awesome" name="search" size={30} />
+          <Icon
+            type="font-awesome"
+            name="search"
+            size={30}
+            onPress={() => this.gotoSearchPage()}
+          />
         </View>
         <View
           style={{
+            padding: 10,
             width: '90%',
             height: '25%',
             alignSelf: 'center',
-            borderColor: 'red',
-            borderWidth: 2,
+            borderColor: 'black',
+            borderWidth: 3,
+            borderRadius: 30,
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-around',
@@ -90,25 +148,29 @@ export default class DetailsPage extends Component {
           <Text>
             结余
             <Text>
-              {this.state.cashSurplus} {this.state.usingLedger.coin.url}
+              <MoneyView money={this.state.surplus} />{' '}
+              {this.state.ledger && this.state.ledger.coin.symbol}
             </Text>
           </Text>
           <Text>
             支出
             <Text>
-              {this.state.cashSurplus} {this.state.usingLedger.coin.url}
+              <MoneyView money={this.state.expense} />{' '}
+              {this.state.ledger && this.state.ledger.coin.symbol}
             </Text>
           </Text>
           <Text>
             收入
             <Text>
-              {this.state.cashSurplus} {this.state.usingLedger.coin.url}
+              <MoneyView money={this.state.income} />{' '}
+              {this.state.ledger ? this.state.ledger.coin.symbol : ''}
             </Text>
           </Text>
         </View>
-        <View style={{width: '95%', height: 200, alignSelf: 'center'}}>
+        <View style={{width: '95%', height: '50%', alignSelf: 'center'}}>
           <View
             style={{
+              paddingVertical: 10,
               display: 'flex',
               flexDirection: 'row',
               justifyContent: 'space-between',
@@ -118,6 +180,7 @@ export default class DetailsPage extends Component {
             </View>
             <View
               style={{
+                alignSelf: 'center',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'flex-end',
@@ -125,8 +188,46 @@ export default class DetailsPage extends Component {
               <Text style={{color: 'green', textAlign: 'center'}}>+ 新建</Text>
             </View>
           </View>
-          <ScrollView></ScrollView>
+          <ScrollView
+            style={{maxHeight: '90%'}}
+            showsVerticalScrollIndicator={false}>
+            {this.state.blocks.map(block => (
+              <BillItemBlock
+                key={block.dateTime}
+                style={{borderBottomColor: '#82623d', borderBottomWidth: 2}}
+                total={block.total}
+                coin={this.state.coin}
+                dateTime={dayjs(block.dateTime)}
+                bills={block.bills}
+              />
+            ))}
+          </ScrollView>
         </View>
+        <CalendarBottomSheet
+          ref={this.calendarSelectorRef}
+          confirm={ranges => {
+            this.calendarSelectorRef.current.close();
+            let love = showSibling(<Loading />);
+            queryBillsForPeriods({
+              ledgerID: this.state.ledger.ID,
+              ranges: ranges,
+            }).then(dto => {
+              this.setState({
+                surplus: dto.surplus,
+                expense: dto.expense,
+                income: dto.income,
+                coin: dto.coin,
+                blocks: dto.blocks,
+              });
+              love.destroy();
+            });
+          }}
+          onSelect={days => {
+            this.setState({
+              ranges: days,
+            });
+          }}
+        />
       </View>
     );
   }

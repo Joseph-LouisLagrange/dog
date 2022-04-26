@@ -1,38 +1,49 @@
 import React, {Component} from 'react';
-import {ScrollView, View} from 'react-native';
-import {Calendar, CalendarProvider} from 'react-native-calendars';
-import {Text} from 'react-native-elements';
-import DatePicker from 'react-native-modern-datepicker';
-import {loadBootData} from '../api/TestApi';
-import MutiCalendar from '../component/MutiCalendar';
-import WeekCalendar from '../component/WeekCalendar';
-import Home from './Home';
+import {View} from 'react-native';
+import {Image} from 'react-native-elements';
+import {ping} from '../api/Public';
+import {isLogin} from '../api/UserApi';
 
 export default class BootPage extends Component {
   static name = 'Boot-Page';
   route;
   navigation;
+
   constructor(props) {
     super(props);
     this.route = props.route;
     this.navigation = props.navigation;
   }
 
+  async iLoveYou() {
+    const pong = await ping();
+    if (pong == 'pong') {
+      const love = await isLogin();
+      if (love) {
+        this.navigation.reset({
+          index: 0,
+          routes: [{name: 'Home'}],
+        });
+      } else {
+        this.navigation.reset({
+          index: 0,
+          routes: [{name: 'Login'}],
+        });
+      }
+    }
+  }
+
   componentDidMount() {
-    loadBootData().then(rsp=>{
-      console.info(rsp.data);
-      this.navigation
-      .reset({
-        index: 0,
-        routes: [{name: "Home"}],
-      });
-    })
+    this.iLoveYou();
   }
   render() {
     return (
-      <ScrollView style={{width:'100%',height:'100%'}}>
-        <Text>启 动 页</Text>
-      </ScrollView>
+      <View style={{width: '100%', height: '100%'}}>
+        <Image
+          source={require('@/assets/setup/welcome.jpeg')}
+          style={{width: '100%', height: '100%'}}
+        />
+      </View>
     );
   }
 }

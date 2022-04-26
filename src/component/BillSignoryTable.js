@@ -6,37 +6,31 @@ const Style = StyleSheet.create({
   btn: {
     width: '23%',
     marginVertical: 10,
-    marginRight:2,
-    marginLeft:3
+    marginRight: 2,
+    marginLeft: 3,
   },
 });
 
 export default class BillSignoryTable extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      ...props,
-    };
   }
-  static getDerivedStateFromProps(nextProps, state) {
-    return {...nextProps};
-  }
-
   render() {
     // 生成 buttons
-    let buttons = this.props.signories.map(signory => (
+    let buttons = this.props.signories.map(signory => 
       <Button
-        onPress={() => this.state.onSelectID(signory.ID)}
+        key={signory.ID}
+        onPress={() => this.props.onSelect(signory)}
         containerStyle={Style.btn}
         title={signory.name}
         buttonStyle={
-          this.state.selectedSignoryID == signory.ID
+          this.props.selectedSignory==signory
             ? {backgroundColor: 'rgba(255, 193, 7, 1)'}
             : {backgroundColor: 'rgba(244, 244, 244, 1)'}
         }
         titleStyle={{color: 'black'}}
       />
-    ));
+    );
     return (
       <View
         style={{
