@@ -16,7 +16,15 @@ import {PERMISSIONS, request, RESULTS} from 'react-native-permissions';
 import {login} from '../service/UserSerive';
 import {baseURL} from '../config/ApiConfig';
 import {APPLICATION_FORM_DATA} from '../constant/Const';
-import {makeUsername, register} from '../api/UserApi';
+import {
+  loginByUsernameAndPassword,
+  makeUsername,
+  register,
+} from '../api/UserApi';
+import {showSibling} from '../util/ViewUtil';
+import {createLedger} from '../api/LedgerApi';
+import Toast from 'react-native-easy-toast';
+import Loading from '../component/Loading';
 export default class Register extends Component {
   route;
   navigation;
@@ -35,10 +43,12 @@ export default class Register extends Component {
   }
 
   doMakeUsername() {
+    const love = showSibling(<Loading />);
     makeUsername().then(username => {
       this.setState({
         username: username,
       });
+      love.destroy();
     });
   }
 
@@ -70,6 +80,7 @@ export default class Register extends Component {
   };
 
   doRegister() {
+    const love = showSibling(<Loading/>);
     register({
       avatar: {
         type: this.state.avatarInfo.type,
@@ -79,8 +90,30 @@ export default class Register extends Component {
       password: this.state.password,
     })
       .then(rsp => {
-        console.debug(rsp.info());
-        console.debug(rsp.json());
+        loginByUsernameAndPassword({
+          username: this.state.username,
+          password: this.state.password,
+        }).then(payload => {
+          // 执行信息初始化
+          // 1. 创建 using 的默认账本
+          createLedger({
+            name: '默认账本',
+            using: true,
+            coinID: 3,
+            coverID: 1,
+          }).then(content => {
+            if (content) {
+              love.destroy();
+              // 跳转到主界面
+              this.props.navigation.reset({
+                index: 0,
+                routes: [{name: 'Home'}],
+              });
+            }else{
+              this.toast.show("用户数据初始化失败")
+            }
+          });
+        });
       })
       .catch(error => {
         console.error(error);
@@ -90,6 +123,7 @@ export default class Register extends Component {
   render() {
     return (
       <View style={{width: '100%', height: '100%'}}>
+         <Toast position="top" ref={toast => (this.toast = toast)} />
         <View
           style={{
             marginTop: '20%',

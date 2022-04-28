@@ -26,6 +26,9 @@ import AddAccountPage from '@/page/AddAccountPage';
 import  CreateAccountPage from '@/page/CreateAccountPage';
 import CurrencyConversion from '@/page/CurrencyConversion';
 import CoinMutiSelector from '@/page/CoinMutiSelector';
+import RecycleBinPage from '@/page/RecycleBinPage';
+import {} from '@/config/CalendarConfig';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -52,6 +55,7 @@ export default class App extends Component {
             <Stack.Screen component={CreateAccountPage} name="Create-Account-Page"/>
             <Stack.Screen component={CurrencyConversion} name="Currency-Conversion"/>
             <Stack.Screen component={CoinMutiSelector} name="Coin-Muti-Selector"/>
+            <Stack.Screen component={RecycleBinPage} name="Recycle-Bin-Page"/>
           </Stack.Navigator>
         </NavigationContainer>
       </RootSiblingParent>
@@ -60,3 +64,4 @@ export default class App extends Component {
 }
 
 LogBox.ignoreLogs(['EventEmitter.removeListener']);
+LogBox.ignoreAllLogs();

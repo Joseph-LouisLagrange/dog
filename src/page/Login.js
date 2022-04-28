@@ -15,7 +15,7 @@ export default class Login extends Component {
     this.route = props.route;
     this.navigation = props.navigation;
     this.state = {
-      username: '5335361060',
+      username: '0123456789',
       password: '123456',
     };
   }

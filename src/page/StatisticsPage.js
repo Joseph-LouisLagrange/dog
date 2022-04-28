@@ -4,6 +4,10 @@ import {ButtonGroup, Icon, Text} from 'react-native-elements';
 import CalendarBottomSheet from '@/component/CalendarBottomSheet';
 import MoneyCard from '../component/MoneyCard';
 import MoneyTrendOverview from '../component/MoneyTrendOverview';
+import {Button, DatePickerView, Tabs} from '@ant-design/react-native';
+import dayjs from 'dayjs';
+import {INCOME} from '../constant/Const';
+
 export function StatisticsPage(props) {
   let calendarSelectorRef = React.createRef();
   let [selectedBillTypeIndex, setSelectedBillTypeIndex] = React.useState(0);
@@ -51,9 +55,15 @@ export function StatisticsPage(props) {
         <MoneyCard />
       </View>
       <ScrollView>
-        <MoneyTrendOverview />
+        <MoneyTrendOverview
+          consequent={true}
+          average={1000.12}
+          data={{}}
+          coin={{}}
+          highest={{type: INCOME, amount: 3699.56}}
+        />
       </ScrollView>
-      <CalendarBottomSheet ref={calendarSelectorRef} />
+      <CalendarBottomSheet initMode = {'month'} ref={calendarSelectorRef} />
     </View>
   );
 }

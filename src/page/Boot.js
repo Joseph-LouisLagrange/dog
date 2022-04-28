@@ -1,6 +1,7 @@
+import { TabBar } from '@ant-design/react-native';
 import React, {Component} from 'react';
 import {View} from 'react-native';
-import {Image} from 'react-native-elements';
+import {Image, Text} from 'react-native-elements';
 import {ping} from '../api/Public';
 import {isLogin} from '../api/UserApi';
 
@@ -34,7 +35,7 @@ export default class BootPage extends Component {
   }
 
   componentDidMount() {
-    this.iLoveYou();
+     this.iLoveYou();
   }
   render() {
     return (

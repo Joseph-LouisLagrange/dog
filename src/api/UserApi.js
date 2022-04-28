@@ -1,5 +1,5 @@
-import axios from 'react-native-axios';
 import RNFetchBlob from 'rn-fetch-blob';
+import axios from 'react-native-axios';
 import {baseURL, get} from '../config/ApiConfig';
 import {APPLICATION_FORM_DATA} from '../constant/Const';
 
@@ -8,7 +8,7 @@ export function loginByUsernameAndPassword({username, password}) {
   return get(
     {
       url: '/user/basicLogin',
-      axios: axios,
+      axios:axios
     },
     {
       auth: {
@@ -52,6 +52,6 @@ export function makeUsername() {
   });
 }
 
-export function isLogin(){
-  return get({url:"/user/isLogin"})
+export function isLogin() {
+  return get({url: '/user/isLogin'});
 }

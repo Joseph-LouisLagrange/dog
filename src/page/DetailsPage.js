@@ -48,6 +48,7 @@ export class DetailsPageView extends Component {
       income: 0.0,
       coin: {},
       blocks: [],
+      period: null,
     };
     this.load();
     this.calendarSelectorRef = React.createRef();
@@ -75,7 +76,7 @@ export class DetailsPageView extends Component {
       income: dto.income,
       coin: dto.coin,
       blocks: dto.blocks,
-      // period: '',
+      period: dayjs().format('YYYY年MM月'),
     });
     love.destroy();
   }
@@ -204,29 +205,52 @@ export class DetailsPageView extends Component {
           </ScrollView>
         </View>
         <CalendarBottomSheet
+        initMode = {'month'}
           ref={this.calendarSelectorRef}
-          confirm={ranges => {
+          confirm={({ranges, mode}) => {
+            console.log('选择日期范围:', ranges);
             this.calendarSelectorRef.current.close();
             let love = showSibling(<Loading />);
             queryBillsForPeriods({
               ledgerID: this.state.ledger.ID,
               ranges: ranges,
             }).then(dto => {
+              let p = null;
+              switch (mode) {
+                case 'week':
+                  p =
+                    dayjs(ranges[0].startDate).format('MM.DD') +
+                    '-' +
+                    dayjs(ranges[0].endDate).format('MM.DD');
+                  break;
+                case 'month':
+                  p = dayjs(ranges[0].startDate).format('YYYY年MM月');
+                  break;
+                case 'day':
+                  break;
+                case 'year':
+                  p = dayjs(ranges[0].startDate).format('YYYY年');
+                  break;
+
+                default:
+                  break;
+              }
               this.setState({
                 surplus: dto.surplus,
                 expense: dto.expense,
                 income: dto.income,
                 coin: dto.coin,
                 blocks: dto.blocks,
+                period: p
               });
               love.destroy();
             });
           }}
-          onSelect={days => {
-            this.setState({
-              ranges: days,
-            });
-          }}
+          // onSelect={days => {
+          //   this.setState({
+          //     ranges: days,
+          //   });
+          // }}
         />
       </View>
     );
