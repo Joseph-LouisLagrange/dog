@@ -20,6 +20,9 @@ export default class ListLedger extends Component {
               leftContent={
                 <Button
                   title="详情"
+                  onPress={() => {
+                    this.props.navigation.navigate({name: 'Ledger-Detail',params:{ledgerID:ledger.ID}});
+                  }}
                   icon={{name: 'info', color: 'white'}}
                   buttonStyle={{minHeight: '100%'}}
                 />
@@ -29,13 +32,16 @@ export default class ListLedger extends Component {
                   <Button
                     title="编辑"
                     onPress={() => {
-                       this.props.navigation.navigate("Update-Ledger-Page",{ledger:ledger});
+                      this.props.navigation.navigate('Update-Ledger-Page', {
+                        ledger: ledger,
+                      });
                     }}
                     icon={{name: 'pencil', color: 'white', type: 'entypo'}}
                     buttonStyle={{minHeight: '50%'}}
                   />
                   <Button
                     title="删除"
+                    disabled={ledger.using}
                     onPress={() => {
                       const love = showSibling(
                         <ComfireDelete
@@ -55,7 +61,7 @@ export default class ListLedger extends Component {
                 </View>
               }>
               <ListItem.Content>
-                <LedgerFace ledger={ledger} using={ledger.using} />
+                <LedgerFace ledger={ledger}/>
               </ListItem.Content>
               <ListItem.Chevron />
             </ListItem.Swipeable>

@@ -39,8 +39,8 @@ export default class CalendarBottomSheet extends Component {
         ],
       },
       day: {
-        tempSelectedState: dayjs(),
-        selectedState: dayjs(),
+        tempSelectedState: [new Date()],
+        selectedState: [new Date()],
         ranges: [
           {startDate: dayjs().startOf('day'), endDate: dayjs().endOf('day')},
         ],
@@ -121,7 +121,7 @@ export default class CalendarBottomSheet extends Component {
         title: '日',
         component: (
           <MutiDayCalendar
-            defaultDay={this.state.day.selectedState}
+            defaultDays={this.state.day.selectedState}
             onSelect={selectedDays => {
               let days = selectedDays.map(day => {
                 return {

@@ -28,6 +28,7 @@ import CurrencyConversion from '@/page/CurrencyConversion';
 import CoinMutiSelector from '@/page/CoinMutiSelector';
 import RecycleBinPage from '@/page/RecycleBinPage';
 import {} from '@/config/CalendarConfig';
+import LedgerDetail from '@/page/LedgerDetail';
 
 
 const Stack = createNativeStackNavigator();
@@ -56,6 +57,7 @@ export default class App extends Component {
             <Stack.Screen component={CurrencyConversion} name="Currency-Conversion"/>
             <Stack.Screen component={CoinMutiSelector} name="Coin-Muti-Selector"/>
             <Stack.Screen component={RecycleBinPage} name="Recycle-Bin-Page"/>
+            <Stack.Screen component={LedgerDetail} name="Ledger-Detail"/>
           </Stack.Navigator>
         </NavigationContainer>
       </RootSiblingParent>

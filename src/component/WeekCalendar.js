@@ -30,7 +30,7 @@ export default class WeekCalendar extends Component {
 
   dayOnPress(day) {
     // 计算day所属的周的开始时间与结束时间（一共7天）
-    let selectedDays = this.markWeek(dayjs(day.timestamp));
+    let selectedDays = this.getMarkWeek(dayjs(day.timestamp));
     this.setState({
       selectedDays: selectedDays,
     });

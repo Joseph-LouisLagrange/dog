@@ -1,6 +1,19 @@
 import React from 'react';
 import {View} from 'react-native';
 import {Text} from 'react-native-elements';
+import {MoneyView} from './MoneyView';
+function cc(mdoe) {
+  switch (mdoe) {
+    case 'week':
+      return '本周';
+    case 'month':
+      return '本月';
+    case 'year':
+      return '本年';
+    default:
+      break;
+  }
+}
 export default function MoneyCard(props) {
   return (
     <View
@@ -14,15 +27,17 @@ export default function MoneyCard(props) {
         flexDirection: 'column',
         justifyContent: 'space-between',
       }}>
-      <Text style={{fontWeight: 'bold', fontSize: 18}}>本月结余</Text>
+      <Text style={{fontWeight: 'bold', fontSize: 18}}>
+        {cc(props.mode)}结余
+      </Text>
       <Text h3 h3Style={{color: 'pink'}}>
-        -2246$
+        <MoneyView money={props.surplus} />
       </Text>
       <Text>
-        本月支出<Text>-2246.47$</Text>
+        {cc(props.mode)}支出:  <MoneyView style={{color:'#000080'}} money={props.expense} />
       </Text>
       <Text>
-        本月收入<Text>-2246.47$</Text>
+        {cc(props.mode)}收入:  <MoneyView style={{color:'#000080'}}  money={props.income} />
       </Text>
     </View>
   );

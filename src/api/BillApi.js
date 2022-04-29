@@ -43,3 +43,9 @@ export function searchByKeyword(keyword) {
     },
   });
 }
+
+export function setUsingLedger(ledgerID){
+  return get({url:"/ledger/setUsingLedger",params:{
+    ledgerID:ledgerID
+  }})
+}

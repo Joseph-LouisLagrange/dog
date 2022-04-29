@@ -27,7 +27,7 @@ export default class LedgerFace extends Component {
           <Text style={{fontWeight:'bold'}}>结余:{this.props.ledger.surplus}</Text>
           <Text style={{fontWeight:'bold'}}>已记录:{this.props.ledger.billCount}笔</Text>
           <Text style={{color: '#7FFF00'}}>
-            {this.props.using ? '正在使用' : ''}
+            {this.props.ledger.using ? '正在使用' : ''}
           </Text>
         </View>
       </View>

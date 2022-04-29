@@ -50,7 +50,9 @@ export class DetailsPageView extends Component {
       blocks: [],
       period: null,
     };
-    this.load();
+    this.props.navigation.addListener('focus',()=>{
+      this.load();
+    })
     this.calendarSelectorRef = React.createRef();
   }
 
@@ -122,7 +124,9 @@ export class DetailsPageView extends Component {
             flexDirection: 'row',
             justifyContent: 'space-between',
           }}>
-          <Text h4>
+          <Text h4 onPress={()=>{
+            this.props.navigation.navigate({name:'Ledger'});
+          }}>
             {this.state.ledger && this.state.ledger.name}
             <Icon type="ant-design" name="down" size={20} />
           </Text>
@@ -245,13 +249,7 @@ export class DetailsPageView extends Component {
               });
               love.destroy();
             });
-          }}
-          // onSelect={days => {
-          //   this.setState({
-          //     ranges: days,
-          //   });
-          // }}
-        />
+          }}/>
       </View>
     );
   }
