@@ -25,7 +25,7 @@ export default class BillItemBlock extends Component {
         <View>
           {this.props.bills.map(bill => (
             <View style={{marginVertical:10}} key={bill.ID}>
-              <BillItem bill={bill} />
+              <BillItem bill={bill} onPress={b=>this.props.onPressItem(b)} />
             </View>
           ))}
         </View>

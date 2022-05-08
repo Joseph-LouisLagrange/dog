@@ -23,13 +23,18 @@ import {RootSiblingParent} from 'react-native-root-siblings';
 import {navigationRef} from '@/util/Route';
 import UpdateLedgerPage from '@/page/UpdateLedgerPage';
 import AddAccountPage from '@/page/AddAccountPage';
-import  CreateAccountPage from '@/page/CreateAccountPage';
+import CreateAccountPage from '@/page/CreateAccountPage';
 import CurrencyConversion from '@/page/CurrencyConversion';
 import CoinMutiSelector from '@/page/CoinMutiSelector';
 import RecycleBinPage from '@/page/RecycleBinPage';
 import {} from '@/config/CalendarConfig';
 import LedgerDetail from '@/page/LedgerDetail';
+import BillDetailPage from '@/page/BillDetailPage';
+import EditBillPage from '@/page/EditBillPage';
+import dayjs from 'dayjs';
 
+var customParseFormat = require('dayjs/plugin/customParseFormat');
+dayjs.extend(customParseFormat);
 
 const Stack = createNativeStackNavigator();
 
@@ -51,13 +56,30 @@ export default class App extends Component {
             <Stack.Screen component={My} name={'My'} />
             <Stack.Screen component={Ledger} name={'Ledger'} />
             <Stack.Screen component={CreateLedger} name={'Create-Ledger'} />
-            <Stack.Screen component={UpdateLedgerPage} name={'Update-Ledger-Page'}/>
-            <Stack.Screen component={AddAccountPage} name={'Add-Account-Page'}/>
-            <Stack.Screen component={CreateAccountPage} name="Create-Account-Page"/>
-            <Stack.Screen component={CurrencyConversion} name="Currency-Conversion"/>
-            <Stack.Screen component={CoinMutiSelector} name="Coin-Muti-Selector"/>
-            <Stack.Screen component={RecycleBinPage} name="Recycle-Bin-Page"/>
-            <Stack.Screen component={LedgerDetail} name="Ledger-Detail"/>
+            <Stack.Screen
+              component={UpdateLedgerPage}
+              name={'Update-Ledger-Page'}
+            />
+            <Stack.Screen
+              component={AddAccountPage}
+              name={'Add-Account-Page'}
+            />
+            <Stack.Screen
+              component={CreateAccountPage}
+              name="Create-Account-Page"
+            />
+            <Stack.Screen
+              component={CurrencyConversion}
+              name="Currency-Conversion"
+            />
+            <Stack.Screen
+              component={CoinMutiSelector}
+              name="Coin-Muti-Selector"
+            />
+            <Stack.Screen component={RecycleBinPage} name="Recycle-Bin-Page" />
+            <Stack.Screen component={LedgerDetail} name="Ledger-Detail" />
+            <Stack.Screen component={BillDetailPage} name="Bill-Detail-Page" />
+            <Stack.Screen component={EditBillPage} name="Edit-Bill-Page" />
           </Stack.Navigator>
         </NavigationContainer>
       </RootSiblingParent>

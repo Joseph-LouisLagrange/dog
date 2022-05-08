@@ -38,7 +38,7 @@ export default class MutiDayCalendar extends Component {
     let dayKey = dayjs(day).format('YYYY-MM-DD');
     if (markedDates[dayKey]) {
       // 已存在，要取消
-      markedDates[dayKey] = undefined;
+      delete markedDates[dayKey];
     } else {
       markedDates[dayKey] = {
         color: '#66CCFF',

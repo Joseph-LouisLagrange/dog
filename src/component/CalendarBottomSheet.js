@@ -27,29 +27,40 @@ export default class CalendarBottomSheet extends Component {
         tempSelectedState: dayjs(),
         selectedState: dayjs(),
         ranges: [
-          {startDate: dayjs().startOf('month')},
-          {startDate: dayjs().endOf('month')},
+          {
+            startDateTime: dayjs().startOf('month'),
+            endDateTime: dayjs().endOf('month'),
+          },
         ],
       },
       week: {
         tempSelectedState: dayjs(),
         selectedState: dayjs(),
         ranges: [
-          {startDate: dayjs().startOf('week'), endDate: dayjs().endOf('week')},
+          {
+            startDateTime: dayjs().startOf('week'),
+            endDateTime: dayjs().endOf('week'),
+          },
         ],
       },
       day: {
         tempSelectedState: [new Date()],
         selectedState: [new Date()],
         ranges: [
-          {startDate: dayjs().startOf('day'), endDate: dayjs().endOf('day')},
+          {
+            startDateTime: dayjs().startOf('day'),
+            endDateTime: dayjs().endOf('day'),
+          },
         ],
       },
       year: {
         tempSelectedState: dayjs().year(),
         selectedState: dayjs().year(),
         ranges: [
-          {startDate: dayjs().startOf('year'), endDate: dayjs().endOf('year')},
+          {
+            startDateTime: dayjs().startOf('year'),
+            endDateTime: dayjs().endOf('year'),
+          },
         ],
       },
     };
@@ -82,8 +93,8 @@ export default class CalendarBottomSheet extends Component {
                 week: {
                   ranges: [
                     {
-                      startDate: dayjs(days[0]).startOf('day'),
-                      endDate: dayjs(days[6]).endOf('day'),
+                      startDateTime: dayjs(days[0]).startOf('day'),
+                      endDateTime: dayjs(days[6]).endOf('day'),
                     },
                   ],
                   tempSelectedState: dayjs(days[0]).toDate(),
@@ -105,8 +116,8 @@ export default class CalendarBottomSheet extends Component {
                 month: {
                   ranges: [
                     {
-                      startDate: dayjs(yearMonth).startOf('month'),
-                      endDate: dayjs(yearMonth).endOf('month'),
+                      startDateTime: dayjs(yearMonth).startOf('month'),
+                      endDateTime: dayjs(yearMonth).endOf('month'),
                     },
                   ],
                   tempSelectedState: yearMonth,
@@ -123,10 +134,11 @@ export default class CalendarBottomSheet extends Component {
           <MutiDayCalendar
             defaultDays={this.state.day.selectedState}
             onSelect={selectedDays => {
+              console.log('selectedDays', selectedDays);
               let days = selectedDays.map(day => {
                 return {
-                  startDate: dayjs(day).startOf('day'),
-                  endDate: dayjs(day).endOf('day'),
+                  startDateTime: dayjs(day).startOf('day'),
+                  endDateTime: dayjs(day).endOf('day'),
                 };
               });
               this.setState({
@@ -153,8 +165,8 @@ export default class CalendarBottomSheet extends Component {
                 year: {
                   ranges: [
                     {
-                      startDate: dayjs().year(year).startOf('year'),
-                      endDate: dayjs().year(year).endOf('year'),
+                      startDateTime: dayjs().year(year).startOf('year'),
+                      endDateTime: dayjs().year(year).endOf('year'),
                     },
                   ],
                   selectedState: this.state.year.selectedState,

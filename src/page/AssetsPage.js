@@ -87,7 +87,7 @@ export default class AssetsPage extends Component {
               添加
             </Text>
           </View>
-          <ScrollView style={{maxHeight:'70%'}}>
+          <ScrollView style={{height:'70%'}}>
               {this.state.accounts.map(account=><AccountItem key={account.ID} account={account}/>)}
           </ScrollView>
         </View>

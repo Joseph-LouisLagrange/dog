@@ -31,13 +31,16 @@ export default function MoneyCard(props) {
         {cc(props.mode)}结余
       </Text>
       <Text h3 h3Style={{color: 'pink'}}>
+        {props.coin.symbol}
         <MoneyView money={props.surplus} />
       </Text>
       <Text>
-        {cc(props.mode)}支出:  <MoneyView style={{color:'#000080'}} money={props.expense} />
+        {cc(props.mode)}支出: {props.coin.symbol}
+        <MoneyView style={{color: '#000080'}} money={props.expense} />
       </Text>
       <Text>
-        {cc(props.mode)}收入:  <MoneyView style={{color:'#000080'}}  money={props.income} />
+        {cc(props.mode)}收入: {props.coin.symbol}
+        <MoneyView style={{color: '#000080'}} money={props.income} />
       </Text>
     </View>
   );

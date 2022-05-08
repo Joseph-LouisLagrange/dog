@@ -39,7 +39,10 @@ export class DetailsPageView extends Component {
     super(props);
     this.state = {
       ranges: [
-        {startDate: dayjs().startOf('month'), endDate: dayjs().endOf('month')},
+        {
+          startDateTime: dayjs().startOf('month'),
+          endDateTime: dayjs().endOf('month'),
+        },
       ],
       allLedgers: [],
       ledger: null,
@@ -50,9 +53,9 @@ export class DetailsPageView extends Component {
       blocks: [],
       period: null,
     };
-    this.props.navigation.addListener('focus',()=>{
+    this.props.navigation.addListener('focus', () => {
       this.load();
-    })
+    });
     this.calendarSelectorRef = React.createRef();
   }
 
@@ -124,9 +127,11 @@ export class DetailsPageView extends Component {
             flexDirection: 'row',
             justifyContent: 'space-between',
           }}>
-          <Text h4 onPress={()=>{
-            this.props.navigation.navigate({name:'Ledger'});
-          }}>
+          <Text
+            h4
+            onPress={() => {
+              this.props.navigation.navigate({name: 'Ledger'});
+            }}>
             {this.state.ledger && this.state.ledger.name}
             <Icon type="ant-design" name="down" size={20} />
           </Text>
@@ -190,7 +195,13 @@ export class DetailsPageView extends Component {
                 flexDirection: 'column',
                 justifyContent: 'flex-end',
               }}>
-              <Text style={{color: 'green', textAlign: 'center'}}>+ 新建</Text>
+              <Text
+                style={{color: 'green', textAlign: 'center'}}
+                onPress={() => {
+                  this.props.navigation.navigate('Book-Keeping');
+                }}>
+                + 新建
+              </Text>
             </View>
           </View>
           <ScrollView
@@ -198,6 +209,12 @@ export class DetailsPageView extends Component {
             showsVerticalScrollIndicator={false}>
             {this.state.blocks.map(block => (
               <BillItemBlock
+                onPressItem={bill => {
+                  this.props.navigation.navigate({
+                    name: 'Bill-Detail-Page',
+                    params: {bill: bill},
+                  });
+                }}
                 key={block.dateTime}
                 style={{borderBottomColor: '#82623d', borderBottomWidth: 2}}
                 total={block.total}
@@ -209,7 +226,7 @@ export class DetailsPageView extends Component {
           </ScrollView>
         </View>
         <CalendarBottomSheet
-        initMode = {'month'}
+          initMode={'month'}
           ref={this.calendarSelectorRef}
           confirm={({ranges, mode}) => {
             console.log('选择日期范围:', ranges);
@@ -223,17 +240,17 @@ export class DetailsPageView extends Component {
               switch (mode) {
                 case 'week':
                   p =
-                    dayjs(ranges[0].startDate).format('MM.DD') +
+                    dayjs(ranges[0].startDateTime).format('MM.DD') +
                     '-' +
-                    dayjs(ranges[0].endDate).format('MM.DD');
+                    dayjs(ranges[0].endDateTime).format('MM.DD');
                   break;
                 case 'month':
-                  p = dayjs(ranges[0].startDate).format('YYYY年MM月');
+                  p = dayjs(ranges[0].startDateTime).format('YYYY年MM月');
                   break;
                 case 'day':
                   break;
                 case 'year':
-                  p = dayjs(ranges[0].startDate).format('YYYY年');
+                  p = dayjs(ranges[0].startDateTime).format('YYYY年');
                   break;
 
                 default:
@@ -245,11 +262,12 @@ export class DetailsPageView extends Component {
                 income: dto.income,
                 coin: dto.coin,
                 blocks: dto.blocks,
-                period: p
+                period: p,
               });
               love.destroy();
             });
-          }}/>
+          }}
+        />
       </View>
     );
   }

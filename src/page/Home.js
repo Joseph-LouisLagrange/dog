@@ -56,9 +56,16 @@ export default class Home extends Component {
           </Text>
         </View>
 
-        <ScrollView style={{maxHeight:'70%',width:'90%',alignSelf:'center'}}>
+        <ScrollView
+          style={{maxHeight: '70%', width: '90%', alignSelf: 'center'}}>
           {this.state.todayBills ? (
             <BillItemBlock
+              onPressItem={bill => {
+                this.props.navigation.navigate({
+                  name: 'Bill-Detail-Page',
+                  params: {bill: bill},
+                });
+              }}
               coin={{symbol: '￥'}}
               dateTime={new Date()}
               bills={this.state.todayBills.bills}

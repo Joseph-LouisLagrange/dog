@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {ActivityIndicator, ScrollView, View} from 'react-native';
-import {Avatar, Button, ButtonGroup, Input} from 'react-native-elements';
+import {Avatar, Button, ButtonGroup, Input, Icon} from 'react-native-elements';
 import BillSignoryTable from '../component/BillSignoryTable';
 import {getBillSignoriesByType} from '../service/BillService';
 import AssetAccountDropDownSeletor from '../component/AssetAccountDropDownSeletor';
@@ -34,7 +34,7 @@ export default class Bookkeeping extends Component {
 
       billType: EXPENSE,
       dateTime: null,
-      amount: "0.00",
+      amount: '0.00',
       remark: null,
 
       isVisibleDatePicker: false,
@@ -75,14 +75,18 @@ export default class Bookkeeping extends Component {
 
   doCreateBill() {
     createBill({
-      accountID: this.state.selectedAccount?this.state.selectedAccount.ID:null,
+      accountID: this.state.selectedAccount
+        ? this.state.selectedAccount.ID
+        : null,
       amount: Number.parseFloat(this.state.amount),
       coinID: this.state.selectedCoin.ID,
       ledgerID: this.state.selectedLedger.ID,
       remark: this.state.remark,
       signoryID: this.state.selectedSignory.ID,
       type: this.state.billType,
-      dateTime:dayjs(this.state.dateTime||new Date()).format("YYYY-MM-DD HH:mm:ss"),
+      dateTime: dayjs(this.state.dateTime || new Date()).format(
+        'YYYY-MM-DD HH:mm:ss',
+      ),
     }).then(rsp => {
       this.props.navigation.goBack();
     });
@@ -177,16 +181,21 @@ export default class Bookkeeping extends Component {
                 flexDirection: 'row',
                 justifyContent: 'space-around',
               }}>
-              <Avatar
-                size={40}
+              <Button
+                type="clear"
+                icon={<Icon name="date" type="fontisto" />}
+                titleStyle={{fontSize: 12, paddingLeft: 5}}
+                title={
+                  this.state.dateTime
+                    ? dayjs(this.state.dateTime).format('YYYY-MM-DD\nHH:mm')
+                    : '现在'
+                }
                 onPress={() => {
                   this.setState({isVisibleDatePicker: true});
                 }}
-                rounded
-                icon={{name: 'date', type: 'fontisto'}}
-                containerStyle={{backgroundColor: '#6733b9'}}
               />
               <DateTimePickerModal
+                date={this.state.dateTime || new Date()}
                 mode="datetime"
                 onConfirm={this.setBillDate}
                 onCancel={this.hideDatePicker}
@@ -194,9 +203,9 @@ export default class Bookkeeping extends Component {
               />
               <Button
                 title={'完成'}
-                onPress={()=>this.doCreateBill()}
+                onPress={() => this.doCreateBill()}
                 buttonStyle={{backgroundColor: 'rgba(214, 61, 57, 1)'}}
-                containerStyle={{width: '35%'}}
+                containerStyle={{width: '35%', height: '100%'}}
               />
             </View>
           </ScrollView>

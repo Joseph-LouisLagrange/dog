@@ -1,20 +1,12 @@
 import dayjs from 'dayjs';
 import React from 'react';
-import {Dimensions, useWindowDimensions, View} from 'react-native';
+import {View} from 'react-native';
 import {Text} from 'react-native-elements';
 import {
-  Curve,
-  VictoryArea,
   VictoryAxis,
   VictoryChart,
-  VictoryLine,
-  VictoryScatter,
   VictoryTheme,
-  VictorySelectionContainer,
-  VictoryVoronoiContainer,
-  VictoryCursorContainer,
   VictoryTooltip,
-  VictoryLabel,
   VictoryBar,
 } from 'victory-native';
 
@@ -26,6 +18,10 @@ class CatPoint extends React.Component {
   render() {
     return <Text>.</Text>;
   }
+}
+
+function max(data) {
+  return Math.max(...data.map(d => d.y));
 }
 
 function getDateUnit(mode) {
@@ -42,13 +38,74 @@ function getDateUnit(mode) {
   return {dateUnit: '日期序列', subDateUnit: '天'};
 }
 
+function yearData(amountAtDates) {
+  let ll = {};
+  for (let i = 0; i < amountAtDates.length; i++) {
+    const element = amountAtDates[i];
+    ll[element.date.month()] = element;
+  }
+  let data = [];
+  for (let monthI = 0; monthI < 12; monthI++) {
+    if (ll[monthI]) {
+      data.push({
+        x: monthI + 1,
+        y: ll[monthI].amount,
+        label: ll[monthI].amount,
+      });
+    } else {
+      data.push({x: monthI, y: 0, label: 0});
+    }
+  }
+  return data;
+}
+
+function monthData(ranges, amountAtDates) {
+  let startX = ranges[0].startDateTime.date();
+  let endX = ranges[0].endDateTime.date();
+  let data = [];
+  let ll = {};
+  for (let i = 0; i < amountAtDates.length; i++) {
+    const element = amountAtDates[i];
+    ll[element.date.date()] = element;
+  }
+  for (let i = startX; i <= endX; i++) {
+    if (ll[i]) data.push({x: i, y: ll[i].amount, label: ll[i].amount});
+    else data.push({x: i + 1, y: 0, label: 0});
+  }
+  return data;
+}
+
+function weekData(ranges, amountAtDates) {
+  let startX = ranges[0].startDateTime.day();
+  let endX = ranges[0].endDateTime.day();
+  let data = [];
+  let ll = {};
+  for (let i = 0; i < amountAtDates.length; i++) {
+    const element = amountAtDates[i];
+    ll[element.date.day()] = element;
+  }
+  for (let i = startX; i <= endX; i++) {
+    if (ll[i]) data.push({x: i + 1, y: ll[i].amount, label: ll[i].amount});
+    else data.push({x: i + 1, y: 0, label: 0});
+  }
+  return data;
+}
+
 // 收入/支出趋势概况
 export default function MoneyTrendOverview(props) {
   const {dateUnit, subDateUnit} = getDateUnit(props.mode);
+  let amountAtDates = props.amountAtDates.map(a => {
+    return {date: dayjs(a.dateTime), amount: Math.abs(a.amount)};
+  });
+
   const pp = ['支出', '收入'];
   let data = new Array();
-  for (let x = 0; x <= 30; x++) {
-    data.push({x: x, y: x});
+  if (props.mode == 'year') {
+    data = yearData(amountAtDates);
+  } else if (props.mode == 'month') {
+    data = monthData(props.ranges, amountAtDates);
+  } else if (props.mode == 'week') {
+    data = weekData(props.ranges, amountAtDates);
   }
   return (
     <View
@@ -77,10 +134,10 @@ export default function MoneyTrendOverview(props) {
           <Text>
             在
             <Text style={{color: 'red'}}>
-              {1}
+              {props.highest.date.format("YYYY-MM-DD")}
               {subDateUnit}
             </Text>
-            ,你支出了{props.highestMoney}
+            ,你{pp[props.type]}了{props.coin.symbol}{props.highest.highestMoney}
           </Text>
         </View>
         <View
@@ -92,9 +149,9 @@ export default function MoneyTrendOverview(props) {
           <View>
             <Text>
               本{dateUnit}内平均每{subDateUnit}
-              {props.type}
+              {pp[props.type]}
             </Text>
-            <Text>{73.46}</Text>
+            <Text>{props.coin.symbol}{props.average}</Text>
           </View>
           <View>
             <Text>
@@ -105,25 +162,25 @@ export default function MoneyTrendOverview(props) {
         </View>
       </View>
       {/* borderWidth: 2, borderColor: 'red' */}
-      <View style={{alignSelf: 'center'}}>
-        <VictoryChart
-          padding={28}
-          style={{background: {fill: 'pink'}}}
-          theme={VictoryTheme.material}
-          width={props.width * 0.9}
-          height={props.height * 0.7}
-          domain={{x: [0, 30], y: [0, 30]}}>
-          <VictoryAxis
-            crossAxis
-            //tickValues={[5]}
-            //width={400}
-            //height={400}
-            //domain={[-10, 10]}
+      {props.mode != 'day' && (
+        <View style={{alignSelf: 'center'}}>
+          <VictoryChart
+            padding={28}
+            style={{background: {fill: 'pink'}}}
             theme={VictoryTheme.material}
-            //offsetY={200}
-            standalone={true}
-          />
-          <VictoryAxis
+            width={props.width * 0.9}
+            height={props.height * 0.7}
+            domain={{y: [0, max(data) * 1.2]}}>
+            <VictoryAxis
+              crossAxis
+              //width={400}
+              //height={400}
+              //domain={[-10, 10]}
+              theme={VictoryTheme.material}
+              //offsetY={200}
+              standalone={true}
+            />
+            {/* <VictoryAxis
             dependentAxis
             crossAxis
             //width={400}
@@ -132,19 +189,17 @@ export default function MoneyTrendOverview(props) {
             theme={VictoryTheme.material}
             //offsetY={200}
             standalone={false}
-          />
-          <VictoryBar
-            data={data}
-            labels={() => 'HELLO'}
-            labelComponent={
-              <VictoryTooltip
-                renderInPortal={false}
-                constrainToVisibleArea
-              />
-            }
-          />
-        </VictoryChart>
-      </View>
+          /> */}
+            <VictoryBar
+              data={data}
+              //labels={() => 'HELLO'}
+              labelComponent={
+                <VictoryTooltip renderInPortal={false} constrainToVisibleArea />
+              }
+            />
+          </VictoryChart>
+        </View>
+      )}
     </View>
   );
 }

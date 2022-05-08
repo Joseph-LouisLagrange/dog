@@ -1,9 +1,7 @@
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React, {Component} from 'react';
-import {Button, Icon, Tab, Text} from 'react-native-elements';
+import {Button, Icon} from 'react-native-elements';
 import DetailsPage from '@/page/DetailsPage';
-import {StatisticsPage} from './StatisticsPage';
-import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
+import StatisticsPage from './StatisticsPage';
 import TabNavigator from 'react-native-tab-navigator';
 import AssetsPage from './AssetsPage';
 

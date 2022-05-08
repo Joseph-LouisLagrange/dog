@@ -24,7 +24,7 @@ export default class BillSignoryTable extends Component {
         containerStyle={Style.btn}
         title={signory.name}
         buttonStyle={
-          this.props.selectedSignory==signory
+          this.props.selectedSignory?.ID==signory.ID
             ? {backgroundColor: 'rgba(255, 193, 7, 1)'}
             : {backgroundColor: 'rgba(244, 244, 244, 1)'}
         }
