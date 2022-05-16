@@ -32,6 +32,11 @@ import LedgerDetail from '@/page/LedgerDetail';
 import BillDetailPage from '@/page/BillDetailPage';
 import EditBillPage from '@/page/EditBillPage';
 import dayjs from 'dayjs';
+import PersonEditPage from '@/page/PersonEditPage';
+import AssetsDetailPage from '@/page/AssetsDetailPage';
+import AboutWePage from '@/page/AboutWePage';
+import RecoverBillPage from '@/page/RecoverBillPage';
+import RecoverLedgerPage from '@/page/RecoverLedgerPage';
 
 var customParseFormat = require('dayjs/plugin/customParseFormat');
 dayjs.extend(customParseFormat);
@@ -80,6 +85,20 @@ export default class App extends Component {
             <Stack.Screen component={LedgerDetail} name="Ledger-Detail" />
             <Stack.Screen component={BillDetailPage} name="Bill-Detail-Page" />
             <Stack.Screen component={EditBillPage} name="Edit-Bill-Page" />
+            <Stack.Screen component={PersonEditPage} name="Person-Edit-Page" />
+            <Stack.Screen
+              component={AssetsDetailPage}
+              name="Assets-Detail-Page"
+            />
+            <Stack.Screen component={AboutWePage} name="About-We-Page" />
+            <Stack.Screen
+              component={RecoverBillPage}
+              name="Recover-Bill-Page"
+            />
+            <Stack.Screen
+              component={RecoverLedgerPage}
+              name="Recover-Ledger-Page"
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </RootSiblingParent>

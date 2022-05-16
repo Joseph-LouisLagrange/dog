@@ -1,9 +1,86 @@
 import React, {Component} from 'react';
 import {View, TouchableHighlight} from 'react-native';
-import {Icon, Text} from 'react-native-elements';
+import {Avatar, Icon, ListItem, Text} from 'react-native-elements';
 import {INCOME} from '../constant/Const';
 import {MoneyView} from './MoneyView';
 
+export default class BillItem extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      checked: false,
+    };
+  }
+
+  select(){
+    this.setChecked(true);
+  }
+
+  unselect(){
+    this.setChecked(false);
+  }
+
+  setChecked(check) {
+    this.setState({
+      checked: check,
+    });
+  }
+
+  render() {
+    return (
+      <ListItem
+        disabled={this.props.disabled}
+        topDivider
+        bottomDivider
+        onPress={() => this.props.onPress(this.props.bill)}>
+        {this.props.selectMode === true && (
+          <ListItem.CheckBox
+            uncheckedIcon={
+              <Icon
+                name="checkbox-blank-circle-outline"
+                type="material-community"
+              />
+            }
+            checkedIcon={
+              <Icon name="check-circle-outline" type="material-community" />
+            }
+            checked={this.state.checked}
+            onPress={() => {
+              if (!this.state.checked && this.props.onSelect) {
+                this.props.onSelect(this.props.bill);
+              } else if (this.state.checked && this.props.onUnselect) {
+                this.props.onUnselect(this.props.bill);
+              }
+              this.setChecked(!this.state.checked);
+            }}
+          />
+        )}
+
+        <Avatar
+          size={50}
+          containerStyle={{backgroundColor: '#eb1561'}}
+          rounded
+          icon={{
+            type: this.props.bill.signory?.icon.type,
+            name: this.props.bill.signory?.icon.name,
+          }}
+        />
+        <ListItem.Content>
+          <ListItem.Title>{this.props.bill.signory?.name}</ListItem.Title>
+          <ListItem.Subtitle>{this.props.bill.remark}</ListItem.Subtitle>
+        </ListItem.Content>
+        <View>
+          <Text>
+            <MoneyView money={this.props.bill.amount} />
+            {this.props.bill.coin?.symbol}
+          </Text>
+          <Text>{this.props.bill.account?.name || '不计入账户'}</Text>
+        </View>
+      </ListItem>
+    );
+  }
+}
+/*
 export default class BillItem extends Component {
   constructor(props) {
     super(props);
@@ -11,6 +88,7 @@ export default class BillItem extends Component {
   render() {
     return (
       <TouchableHighlight
+        disabled
         activeOpacity={0.6}
         underlayColor="#DDDDDD"
         onPress={() => this.props.onPress(this.props.bill)}>
@@ -53,7 +131,9 @@ export default class BillItem extends Component {
               {this.props.bill.coin.symbol}
             </Text>
             <Text style={{textAlign: 'right'}}>
-              {this.props.bill.account ? this.props.bill.account.name : '不计入账户'}
+              {this.props.bill.account
+                ? this.props.bill.account.name
+                : '不计入账户'}
             </Text>
           </View>
         </View>
@@ -61,3 +141,4 @@ export default class BillItem extends Component {
     );
   }
 }
+*/

@@ -15,8 +15,10 @@ export default class Login extends Component {
     this.route = props.route;
     this.navigation = props.navigation;
     this.state = {
-      username: '0123456789',
-      password: '123456',
+      username: null,
+      usernameNull: null,
+      password: null,
+      passwordNull: null,
     };
   }
   register = () => {
@@ -31,22 +33,30 @@ export default class Login extends Component {
     return false;
   }
   login = () => {
-    let username = this.state.username.trim();
-    let password = this.state.password.trim();
-    loginByUsernameAndPassword({username: username, password: password})
-      .then(payload => {
-        this.navigation.reset({
-          index: 0,
-          routes: [{name: 'Home'}],
+    let username = this.state.username;
+    let password = this.state.password;
+    if (!username) {
+      this.setState({usernameNull: true});
+    }
+    if (!password) {
+      this.setState({passwordNull: true});
+    }
+    if (username && password) {
+      loginByUsernameAndPassword({username: username, password: password})
+        .then(payload => {
+          this.navigation.reset({
+            index: 0,
+            routes: [{name: 'Home'}],
+          });
+        })
+        .catch(error => {
+          console.log(error)
+          if (error.response.status === 401) {
+            // Unauthorized
+            this.toast.show('账号或密码错误');
+          }
         });
-      })
-      .catch(error => {
-        if (error.response.status === 401) {
-          // Unauthorized
-          this.toast.show('账号或密码错误');
-        }
-        console.error(error);
-      });
+    }
   };
   render() {
     return (
@@ -59,20 +69,22 @@ export default class Login extends Component {
         <View style={Style.form}>
           <View>
             <Input
+              keyboardType='number-pad'
               placeholder="账号"
               onChangeText={username => {
-                this.setState({username: username});
+                this.setState({username: username?.trim(), usernameNull: null});
               }}
               value={this.state.username}
-              errorMessage={''}
+              errorMessage={this.state.usernameNull === true && '账户不能为空'}
             />
             <Input
               placeholder="密码"
               onChangeText={password => {
-                this.setState({password: password});
+                this.setState({password: password?.trim(), passwordNull: null});
               }}
               value={this.state.password}
               secureTextEntry={true}
+              errorMessage={this.state.passwordNull === true && '密码不能为空'}
             />
           </View>
         </View>

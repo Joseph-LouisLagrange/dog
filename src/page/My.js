@@ -1,9 +1,13 @@
 import CookieManager from '@react-native-cookies/cookies';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import React, {Component} from 'react';
+import React, {Component, createRef} from 'react';
 import {TouchableHighlight, View} from 'react-native';
 import {Avatar, Button, Card, Divider, Icon, Text} from 'react-native-elements';
+import {ActivityIndicator} from 'react-native';
 import {FlatGrid} from 'react-native-super-grid';
+import {getLiveDayCount, getMe} from '../api/UserApi';
+import {BottomSheetAtGetImage} from '../component/BottomSheets';
+import {queryBillsCount} from '../api/BillApi';
 /**
  * <Text>我的</Text>
         <Button title={'账本'} onPress={() => this.ledger()} />
@@ -26,47 +30,100 @@ import {FlatGrid} from 'react-native-super-grid';
         />
  */
 
-const features = [
-  {
-    name: '账本',
-    icon: {
-      type: 'foundation',
-      name: 'clipboard-notes',
-      color: '#008B8B',
-    },
-    routeName: 'Ledger',
-  },
-  {
-    name: '汇率转换',
-    icon: {
-      type: 'font-awesome',
-      name: 'exchange',
-      color: '#FFD700',
-    },
-    routeName: 'Currency-Conversion',
-  },
-  {
-    name: '回收站',
-    icon: {
-      type: 'ant-design',
-      name: 'delete',
-      color: '#8B7D6B',
-    },
-    routeName: 'Recycle-Bin-Page',
-  },
-  {
-    name: '关于我们',
-    icon: {
-      type: 'feather',
-      name: 'phone-call',
-      color: '#32CD32',
-    },
-    routeName: '',
-  },
-];
-
 export default class My extends Component {
   static name = 'my';
+
+  features = [
+    {
+      name: '账本',
+      icon: {
+        type: 'foundation',
+        name: 'clipboard-notes',
+        color: '#008B8B',
+      },
+      onPress: () => {
+        this.props.navigation.navigate('Ledger');
+      },
+    },
+    {
+      name: '汇率转换',
+      icon: {
+        type: 'font-awesome',
+        name: 'exchange',
+        color: '#FFD700',
+      },
+      onPress: () => {
+        this.props.navigation.navigate('Currency-Conversion');
+      },
+    },
+    {
+      name: '回收站',
+      icon: {
+        type: 'ant-design',
+        name: 'delete',
+        color: '#8B7D6B',
+      },
+      onPress: () => {
+        this.props.navigation.navigate('Recycle-Bin-Page');
+      },
+    },
+    {
+      name: '关于我们',
+      icon: {
+        type: 'feather',
+        name: 'phone-call',
+        color: '#32CD32',
+      },
+      onPress: () => {
+        this.props.navigation.navigate('About-We-Page');
+      },
+    },
+    {
+      name: '退出登录',
+      icon: {
+        type: 'material-icons',
+        name: 'exit-to-app',
+        color: '#8B4726',
+      },
+      onPress: () => {
+        CookieManager.clearAll().then(res => {
+          if (res) {
+            this.navigation.reset({
+              index: 0,
+              routes: [{name: 'Login'}],
+            });
+          }
+        });
+      },
+    },
+  ];
+
+  constructor(props) {
+    super(props);
+    this.bottomSheetAtGetImageRef = createRef();
+    this.state = {
+      user: null,
+      liveDayCount: null,
+      billsCount: null,
+    };
+    this.props.navigation.addListener('focus', () => {
+      this.load();
+    });
+  }
+
+  async load() {
+    const [me, liveDayCount, billsCount] = await Promise.all([
+      getMe(),
+      getLiveDayCount(),
+      queryBillsCount(),
+    ]);
+    this.setState({
+      user: me,
+      liveDayCount: liveDayCount,
+      billsCount: billsCount,
+    });
+  }
+
   render() {
     return (
       <View
@@ -78,10 +135,16 @@ export default class My extends Component {
         }}>
         <View style={{width: '100%', alignItems: 'center'}}>
           <Avatar
+            renderPlaceholderContent={<ActivityIndicator />}
+            onPress={() => {
+              this.props.navigation.navigate('Person-Edit-Page', {
+                user: this.state.user,
+              });
+            }}
             size={80}
             containerStyle={{alignSelf: 'center'}}
             source={{
-              uri: 'https://img-prod-cms-rt-microsoft-com.akamaized.net/cms/api/am/imageFileData/RE4wHgh?ver=1209',
+              uri: this.state.user?.avatarUrl,
             }}
             rounded>
             <Avatar.Accessory type="ant-design" name="camerao" size={20} />
@@ -94,8 +157,18 @@ export default class My extends Component {
               justifyContent: 'center',
               marginVertical: 10,
             }}>
-            <Text style={{textAlignVertical: 'center'}}>乌托邦</Text>
-            <Icon type="ant-design" name="edit" />
+            <Text style={{textAlignVertical: 'center'}}>
+              {this.state.user?.nickName}
+            </Text>
+            <Icon
+              onPress={() => {
+                this.props.navigation.navigate('Person-Edit-Page', {
+                  user: this.state.user,
+                });
+              }}
+              type="ant-design"
+              name="edit"
+            />
           </View>
           <View
             style={{
@@ -105,9 +178,11 @@ export default class My extends Component {
               width: '100%',
               marginVertical: 10,
             }}>
-            <Text style={{fontSize: 18}}>记账天数 {133}</Text>
+            <Text style={{fontSize: 18}}>
+              记账天数 {this.state.liveDayCount}
+            </Text>
             <Divider orientation="vertical" width={5} />
-            <Text style={{fontSize: 18}}>记账笔数 {10}</Text>
+            <Text style={{fontSize: 18}}>记账笔数 {this.state.billsCount}</Text>
           </View>
         </View>
         <Card containerStyle={{width: '100%', alignSelf: 'center'}}>
@@ -115,12 +190,12 @@ export default class My extends Component {
           <Card.Divider />
           <FlatGrid
             itemDimension={60}
-            data={features}
-            renderItem={({item: {icon, name, routeName}}) => (
+            data={this.features}
+            renderItem={({item: {icon, name, onPress}}) => (
               <TouchableHighlight
                 underlayColor="pink"
                 onPress={() => {
-                  this.props.navigation.navigate(routeName);
+                  onPress();
                 }}>
                 <View>
                   <Avatar

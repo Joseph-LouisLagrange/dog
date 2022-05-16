@@ -214,7 +214,7 @@ export default class StatisticsPage extends Component {
                 p = dayjs(ranges[0].startDateTime).format('YYYY年MM月');
                 break;
               case 'day':
-                p = null;
+                p = "日期序列";
                 break;
               case 'year':
                 p = dayjs(ranges[0].startDateTime).format('YYYY年');

@@ -30,6 +30,42 @@ export function queryBillsForPeriods({ledgerID, ranges}) {
   });
 }
 
+export function queryBillsInAccountForPeriods({accountID, ranges}) {
+  let loves = ranges.map(range => {
+    return {
+      startDateTime: range.startDateTime.format('YYYY-MM-DD HH:mm:ss'),
+      endDateTime: range.endDateTime.format('YYYY-MM-DD HH:mm:ss'),
+    };
+  });
+  return postJSON({
+    url: '/statistics/readBillsInAccount',
+    data: {
+      ranges: loves,
+      accountID: accountID,
+    },
+  });
+}
+
+export function queryDeletedBills() {
+  return get({url: '/bill/readDeletedBillTypeBills'});
+}
+
+export function removeBillsCompletely(IDs) {
+  return postJSON({url: '/bill/removeCompletely', data: IDs});
+}
+
+export function recoverBills(IDs) {
+  return postJSON({url: '/bill/recover', data: IDs});
+}
+
+export function queryDeletedBillCount() {
+  return get({url: '/bill/queryDeletedBillTypeCount'});
+}
+
+export function queryBillsCount() {
+  return get({url: '/bill/queryBillsCount'});
+}
+
 export function queryTodayBills() {
   return get({url: '/bill/getTodayBills'});
 }

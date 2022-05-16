@@ -7,7 +7,7 @@ import {
   Icon,
   Text,
 } from 'react-native-elements';
-import {queryAllLedgers} from '../api/LedgerApi';
+import {queryAllLedgers, queryUsingLedger} from '../api/LedgerApi';
 import {Calendar, LocaleConfig} from 'react-native-calendars';
 import CalendarBottomSheet from '../component/CalendarBottomSheet';
 import {queryBillsForPeriods} from '../api/BillApi';
@@ -44,7 +44,6 @@ export class DetailsPageView extends Component {
           endDateTime: dayjs().endOf('month'),
         },
       ],
-      allLedgers: [],
       ledger: null,
       surplus: 0.0,
       expense: 0.0,
@@ -61,20 +60,13 @@ export class DetailsPageView extends Component {
 
   async load() {
     const love = showSibling(<Loading />);
-    const a = await queryAllLedgers();
-    let usingLedger;
-    for (let ledger of a.ledgers) {
-      if (ledger.using) {
-        usingLedger = ledger;
-      }
-    }
+    const usingLedger = await queryUsingLedger();
     // 加载明细数据
     const dto = await queryBillsForPeriods({
       ledgerID: usingLedger.ID,
       ranges: this.state.ranges,
     });
     this.setState({
-      allLedgers: a.ledgers,
       ledger: usingLedger,
       surplus: dto.surplus,
       expense: dto.expense,

@@ -41,6 +41,12 @@ export default function BillSearchPage({navigation}) {
       <ScrollView style={{height: '40%'}}>
         {block && (
           <BillItemBlock
+            onPressItem={bill => {
+              navigation.navigate({
+                name: 'Bill-Detail-Page',
+                params: {bill: bill},
+              });
+            }}
             coin={block.coin}
             dateTime={block.dateTime}
             bills={block.bills || []}

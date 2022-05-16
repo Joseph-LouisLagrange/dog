@@ -51,6 +51,7 @@ export default class Ledger extends Component {
             <MoneyView money={this.state.sumSurplus} />
           </Text>
         </View>
+        {/**账本列表组件引用 */}
         <ListLedger
           onDelete={(ID)=>this.doDelete(ID)}
           ledgers={this.state.ledgers}

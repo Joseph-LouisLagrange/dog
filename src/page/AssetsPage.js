@@ -87,8 +87,18 @@ export default class AssetsPage extends Component {
               添加
             </Text>
           </View>
-          <ScrollView style={{height:'70%'}}>
-              {this.state.accounts.map(account=><AccountItem key={account.ID} account={account}/>)}
+          <ScrollView style={{height: '70%'}}>
+            {this.state.accounts.map(account => (
+              <AccountItem
+                onPress={account =>
+                  this.props.navigation.navigate('Assets-Detail-Page', {
+                    account: account,
+                  })
+                }
+                key={account.ID}
+                account={account}
+              />
+            ))}
           </ScrollView>
         </View>
       </View>
